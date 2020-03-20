@@ -1,7 +1,9 @@
 package client
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 )
@@ -39,4 +41,23 @@ func (r *ErrorResponse) Error() string {
 func newResponse(r *http.Response) *Response {
 	response := &Response{Response: r}
 	return response
+}
+
+// CheckResponse se responsabiliza por verificar a existência de erros de uma Response
+func CheckResponse(r *http.Response) error {
+	// Verifica se o status code está entre 200 e 299 que define ser sucesso
+	if code := r.StatusCode; code >= 200 && code <= 299 {
+		return nil
+	}
+
+	// Lê e decodifica a mensagem de erro em uma errorResponse
+	errorResponse := &ErrorResponse{Response: r}
+	data, err := ioutil.ReadAll(r.Body)
+	if err == nil && len(data) > 0 {
+		err = json.Unmarshal(data, errorResponse)
+		if err != nil {
+			return err
+		}
+	}
+	return errorResponse
 }
