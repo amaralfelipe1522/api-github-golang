@@ -34,3 +34,9 @@ type ErrorResponse struct {
 func (r *ErrorResponse) Error() string {
 	return fmt.Sprintf("%v %v: %d %v", r.Response.Request.Method, r.Response.Request.URL, r.Response.StatusCode, r.Message)
 }
+
+// retorna uma nova Response dado uma http.Response
+func newResponse(r *http.Response) *Response {
+	response := &Response{Response: r}
+	return response
+}
