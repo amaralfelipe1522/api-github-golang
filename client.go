@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	defaultBasePath = "https://api.github.com/"
-	mediaType       = "application/vnd.github.v3+json"
+	defaultBaseURL = "https://api.github.com/"
+	mediaType      = "application/vnd.github.v3+json"
 )
 
 // Client se refere a estrutura que irá gerenciar a comunicação com a API
@@ -60,4 +60,19 @@ func CheckResponse(r *http.Response) error {
 		}
 	}
 	return errorResponse
+}
+
+// NewClient se responsabiliza por disparar as requests
+func NewClient(httpClient *http.Client) *Client {
+	if httpClient == nil {
+		httpClient = http.DefaultClient
+	}
+
+	// Converte defaultBaseURL para o tipo url.URL
+	baseURL, _ := url.Parse(defaultBaseURL)
+
+	// Instância um novo Client
+	c := &Client{client: httpClient, BaseURL: baseURL}
+
+	return c
 }
